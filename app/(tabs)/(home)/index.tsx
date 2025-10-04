@@ -1,161 +1,166 @@
-import React from "react";
-import { Stack, Link } from "expo-router";
-import { FlatList, Pressable, StyleSheet, View, Text, Alert, Platform } from "react-native";
-import { IconSymbol } from "@/components/IconSymbol";
-import { GlassView } from "expo-glass-effect";
-import { useTheme } from "@react-navigation/native";
 
-const ICON_COLOR = "#007AFF";
+import React from "react";
+import { Stack } from "expo-router";
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from "react-native";
+import { IconSymbol } from "@/components/IconSymbol";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors, commonStyles } from "@/styles/commonStyles";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
-  const theme = useTheme();
-  const modalDemos = [
-    {
-      title: "Standard Modal",
-      description: "Full screen modal presentation",
-      route: "/modal",
-      color: "#007AFF",
-    },
-    {
-      title: "Form Sheet",
-      description: "Bottom sheet with detents and grabber",
-      route: "/formsheet",
-      color: "#34C759",
-    },
-    {
-      title: "Transparent Modal",
-      description: "Overlay without obscuring background",
-      route: "/transparent-modal",
-      color: "#FF9500",
-    }
-  ];
-
-  const renderModalDemo = ({ item }: { item: (typeof modalDemos)[0] }) => (
-    <GlassView style={[
-      styles.demoCard,
-      Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }
-    ]} glassEffectStyle="regular">
-      <View style={[styles.demoIcon, { backgroundColor: item.color }]}>
-        <IconSymbol name="square.grid.3x3" color="white" size={24} />
-      </View>
-      <View style={styles.demoContent}>
-        <Text style={[styles.demoTitle, { color: theme.colors.text }]}>{item.title}</Text>
-        <Text style={[styles.demoDescription, { color: theme.dark ? '#98989D' : '#666' }]}>{item.description}</Text>
-      </View>
-      <Link href={item.route as any} asChild>
-        <Pressable>
-          <GlassView style={[
-            styles.tryButton,
-            Platform.OS !== 'ios' && { backgroundColor: theme.dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }
-          ]} glassEffectStyle="clear">
-            <Text style={[styles.tryButtonText, { color: theme.colors.primary }]}>Try It</Text>
-          </GlassView>
-        </Pressable>
-      </Link>
-    </GlassView>
-  );
-
-  const renderHeaderRight = () => (
-    <Pressable
-      onPress={() => Alert.alert("Not Implemented", "This feature is not implemented yet")}
-      style={styles.headerButtonContainer}
-    >
-      <IconSymbol name="plus" color={theme.colors.primary} />
-    </Pressable>
-  );
-
-  const renderHeaderLeft = () => (
-    <Pressable
-      onPress={() => Alert.alert("Not Implemented", "This feature is not implemented yet")}
-      style={styles.headerButtonContainer}
-    >
-      <IconSymbol
-        name="gear"
-        color={theme.colors.primary}
-      />
-    </Pressable>
-  );
+  const handleNavigateToYouTube = () => {
+    console.log('Navigating to YouTube moderation');
+    router.push('/(tabs)/youtube');
+  };
 
   return (
-    <>
+    <SafeAreaView style={commonStyles.container}>
       {Platform.OS === 'ios' && (
         <Stack.Screen
           options={{
-            title: "Building the app...",
-            headerRight: renderHeaderRight,
-            headerLeft: renderHeaderLeft,
+            title: "YouTube Moderator",
+            headerStyle: { backgroundColor: colors.background },
+            headerTintColor: colors.text,
           }}
         />
       )}
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <FlatList
-          data={modalDemos}
-          renderItem={renderModalDemo}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={[
-            styles.listContainer,
-            Platform.OS !== 'ios' && styles.listContainerWithTabBar
-          ]}
-          contentInsetAdjustmentBehavior="automatic"
-          showsVerticalScrollIndicator={false}
-        />
+      
+      <View style={styles.content}>
+        <View style={styles.hero}>
+          <IconSymbol 
+            name="play.rectangle.fill" 
+            size={100} 
+            color={colors.primary} 
+            style={{ marginBottom: 24 }}
+          />
+          
+          <Text style={styles.title}>YouTube Comment Moderator</Text>
+          <Text style={styles.subtitle}>
+            Detect and manage bot comments on your YouTube videos with advanced AI-powered analysis.
+          </Text>
+        </View>
+
+        <View style={styles.features}>
+          <FeatureCard
+            icon="magnifyingglass.circle"
+            title="Smart Detection"
+            description="Identify spam, bots, and suspicious comments automatically"
+            color={colors.accent}
+          />
+          
+          <FeatureCard
+            icon="trash.circle"
+            title="Quick Actions"
+            description="Delete unwanted comments with a single tap"
+            color={colors.danger}
+          />
+          
+          <FeatureCard
+            icon="chart.pie"
+            title="Analytics"
+            description="View detailed statistics about your comment moderation"
+            color={colors.secondary}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={styles.getStartedButton}
+          onPress={handleNavigateToYouTube}
+        >
+          <Text style={styles.getStartedText}>Get Started</Text>
+          <IconSymbol name="arrow.right" size={20} color={colors.card} />
+        </TouchableOpacity>
       </View>
-    </>
+    </SafeAreaView>
+  );
+}
+
+interface FeatureCardProps {
+  icon: string;
+  title: string;
+  description: string;
+  color: string;
+}
+
+function FeatureCard({ icon, title, description, color }: FeatureCardProps) {
+  return (
+    <View style={[styles.featureCard, commonStyles.card]}>
+      <View style={[styles.featureIcon, { backgroundColor: color }]}>
+        <IconSymbol name={icon as any} size={24} color={colors.card} />
+      </View>
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureDescription}>{description}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
-    // backgroundColor handled dynamically
+    padding: 20,
+    justifyContent: 'space-between',
   },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+  hero: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
-  listContainerWithTabBar: {
-    paddingBottom: 100, // Extra padding for floating tab bar
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: 16,
   },
-  demoCard: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+  subtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
+    paddingHorizontal: 20,
+  },
+  features: {
+    gap: 16,
+  },
+  featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 16,
   },
-  demoIcon: {
+  featureIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 16,
   },
-  demoContent: {
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 4,
     flex: 1,
   },
-  demoTitle: {
+  featureDescription: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+    flex: 2,
+  },
+  getStartedButton: {
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 20,
+    gap: 8,
+  },
+  getStartedText: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 4,
-    // color handled dynamically
-  },
-  demoDescription: {
-    fontSize: 14,
-    lineHeight: 18,
-    // color handled dynamically
-  },
-  headerButtonContainer: {
-    padding: 6,
-  },
-  tryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  tryButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    // color handled dynamically
+    color: colors.card,
   },
 });

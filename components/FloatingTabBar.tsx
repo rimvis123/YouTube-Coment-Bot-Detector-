@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   View,
@@ -12,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/IconSymbol';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@react-navigation/native';
+import { colors } from '@/styles/commonStyles';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -93,10 +95,9 @@ export default function FloatingTabBar({
   }, [activeTabIndex, animatedValue]);
 
   const handleTabPress = (route: string) => {
+    console.log('Tab pressed:', route);
     router.push(route);
   };
-
-  // Remove unnecessary tabBarStyle animation to prevent flickering
 
   const indicatorStyle = useAnimatedStyle(() => {
     const tabWidth = (containerWidth - 16) / tabs.length; // Account for container padding (8px on each side)
@@ -185,13 +186,13 @@ export default function FloatingTabBar({
                     <IconSymbol
                       name={tab.icon}
                       size={24}
-                      color={isActive ? theme.colors.primary : (theme.dark ? '#98989D' : '#8E8E93')}
+                      color={isActive ? colors.primary : colors.text}
                     />
                     <Text
                       style={[
                         styles.tabLabel,
-                        { color: theme.dark ? '#98989D' : '#8E8E93' },
-                        isActive && { color: theme.colors.primary, fontWeight: '600' },
+                        { color: colors.text },
+                        isActive && { color: colors.primary, fontWeight: '600' },
                       ]}
                     >
                       {tab.label}
